@@ -1,7 +1,7 @@
 # Keytrainer by
 # Samuel Burch
 # 25.08.2018
-# v1.0.0
+# v1.0.1
 import sys
 import subprocess as sp
 import platform
@@ -117,7 +117,11 @@ def main():
 			print("Usage: python3 keytrainer.py [level 1-5] [number of iterations]")
 			sys.exit(2)
 		
-		QUANTITY = int(sys.argv[2])
+		arg = int(sys.argv[2])
+		if arg >= 1 and arg <= 1000:
+			QUANTITY = arg
+		else:
+			QUANTITY = 15
 		
 	print("\n\nStarting game on level {} and with {} iterations.\n\n".format(LEVEL, QUANTITY))
 	
