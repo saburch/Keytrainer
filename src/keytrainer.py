@@ -1,7 +1,7 @@
 # Keytrainer by
 # Samuel Burch
 # 25.08.2018
-# v1.0.1
+# v1.0.2
 import sys
 import subprocess as sp
 import platform
@@ -54,7 +54,17 @@ def run_game(level, qty):
 	clear_command = ""
 	global highscore
 	highscore = 0
-	all_chars = "abcdefghijklmnopqrstuvwxyzäöü" # more characters to be used can be added here
+	all_chars_default = "abcdefghijklmnopqrstuvwxyzöüä1234567890" # more characters to be used can be added here
+	# ... or may be added to the custom config file
+	if len(sys.argv) == 4:
+		if sys.argv[3] == "-f":
+			with open("CONFIG.txt", 'r') as configuration:
+				all_chars = configuration.read()
+				configuration.close()
+		else:
+			print("Usage: python3 keytrainer.py [level 1-5] [number of iterations] -f (optional)")
+	elif len(sys.argv) == 3:
+		all_chars = all_chars_default
 	# determine how to clear the terminal screen
 	if platform.system() == "Windows":
 		clear_command = "cls"
@@ -107,14 +117,14 @@ def main():
 	QUANTITY = 0
 	
 	# checking if game was started correctly
-	if len(sys.argv) != 3:
-		print("Usage: python3 keytrainer.py [level 1-5] [number of iterations]")
+	if len(sys.argv) != 4 and len(sys.argv) != 3:
+		print("Usage: python3 keytrainer.py [level 1-5] [number of iterations] -f (optional)")
 		sys.exit(2)
 	else:
 		if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= 5:
 			LEVEL = int(sys.argv[1])
 		else:
-			print("Usage: python3 keytrainer.py [level 1-5] [number of iterations]")
+			print("Usage: python3 keytrainer.py [level 1-5] [number of iterations] -f (optional)")
 			sys.exit(2)
 		
 		arg = int(sys.argv[2])
