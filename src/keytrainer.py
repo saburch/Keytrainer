@@ -1,7 +1,7 @@
 # Keytrainer by
 # Samuel Burch
 # 25.08.2018
-# v1.0.2
+# v1.0.3
 import sys
 import subprocess as sp
 import platform
@@ -28,7 +28,7 @@ except ImportError:
 		
 # roughly killing the program, else it falls into an infinite loop
 def timeout():
-		print("\n\n===> You ran out of time with a score of " + str(highscore) + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+		print("\n\n===> You ran out of time with a score of {}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n".format(str(highscore)))
 		time.sleep(5)
 		os.kill(os.getpid(), signal.SIGINT)
 		sp.run([clear_command])
@@ -54,7 +54,8 @@ def run_game(level, qty):
 	clear_command = ""
 	global highscore
 	highscore = 0
-	all_chars_default = "abcdefghijklmnopqrstuvwxyzöüä1234567890" # more characters to be used can be added here
+	prev_char = ''
+	all_chars_default = "abcdefghijklmnopqrstuvwxyzöüä" # more characters to be used can be added here
 	# ... or may be added to the custom config file
 	if len(sys.argv) == 4:
 		if sys.argv[3] == "-f":
@@ -70,6 +71,10 @@ def run_game(level, qty):
 		clear_command = "cls"
 	elif platform.system() == "Darwin" or platform.system() == "Linux":
 		clear_command = "clear"
+	else:
+		print("Your OS is not supportet at the moment.  :-(")
+		time.sleep(4)
+		sys.exit(4)
 			
 	print("Look at the screen, not at the keyboard. Don't try to cheat.")
 	time.sleep(3)
@@ -80,18 +85,21 @@ def run_game(level, qty):
 		# waiting time equals 6 - level
 		tim = threading.Timer(float(6 - level), timeout)
 		character = random.choice(all_chars)
+		# prevent repeating characters
+		while character == prev_char:
+			character = random.choice(all_chars)
+		prev_char = character
 		print("\n\n\n\t\t\tPress the following key:")
 		print("\t\t\t-------------------")
 		print("\t\t\t|\t\t  |")
-		print("\t\t\t|  \t  " + character + " \t  |")
+		print("\t\t\t|  \t  {} \t  |".format(character))
 		print("\t\t\t|\t\t  |")
 		print("\t\t\t-------------------")
-		print("\n\t\t\tCurrent score: " + str(highscore))
-		print("\n\t\t\t" + str(qty - highscore) + " iterations left")
+		print("\n\t\t\t Current score: {}".format(str(highscore)))
+		print("\n\t\t\t {} iterations left".format(str(qty - highscore)))
 		print("\n\n\n")
 		tim.start()
 				
-		global entered
 		entered = getch()
 		
 		if entered == character:
@@ -109,12 +117,12 @@ def run_game(level, qty):
 
 	# if the game ends successfully
 	print("\n\n===> Congratulations, you made it through!  :-)")
-	print("\n===> Your score: " + str(highscore))
+	print("\n===> Your score: {}".format(str(highscore)))
 	play_again(level, qty)
 		
 def main():
-	LEVEL = 0
-	QUANTITY = 0
+	level = 0
+	quantity = 0
 	
 	# checking if game was started correctly
 	if len(sys.argv) != 4 and len(sys.argv) != 3:
@@ -122,20 +130,20 @@ def main():
 		sys.exit(2)
 	else:
 		if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= 5:
-			LEVEL = int(sys.argv[1])
+			level = int(sys.argv[1])
 		else:
 			print("Usage: python3 keytrainer.py [level 1-5] [number of iterations] -f (optional)")
 			sys.exit(2)
 		
 		arg = int(sys.argv[2])
 		if arg >= 1 and arg <= 1000:
-			QUANTITY = arg
+			quantity = arg
 		else:
-			QUANTITY = 15
+			quantity = 15
 		
-	print("\n\nStarting game on level {} and with {} iterations.\n\n".format(LEVEL, QUANTITY))
+	print("\n\nStarting a game on level {} and with {} iterations.\n\n".format(level, quantity))
 	
-	run_game(LEVEL, QUANTITY)
+	run_game(level, quantity)
 	
 # you know this part
 if __name__ == "__main__":
